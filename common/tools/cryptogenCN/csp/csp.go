@@ -44,10 +44,10 @@ func GeneratePrivateKey(keystorePath string) (bccsp.Key,
 		},
 	}
 	/*
-		lib, pin, label := sansec.FindPKCS11Lib()
+		lib, pin, label := alibaba.FindPKCS11Lib()
 		opts := &factory.FactoryOpts{
-			ProviderName: "SansecPKCS11",
-			SansecP11Opts: &sansec.SansecP11Opts{
+			ProviderName: "alibabaPKCS11",
+			alibabaP11Opts: &alibaba.alibabaP11Opts{
 				HashFamily: "SHA2",
 				SecLevel:   256,
 
@@ -56,7 +56,7 @@ func GeneratePrivateKey(keystorePath string) (bccsp.Key,
 				Pin:       pin,
 				Label:     label,
 
-				FileKeystore: &sansec.FileKeystoreOpts{
+				FileKeystore: &alibaba.FileKeystoreOpts{
 					KeyStorePath: keystorePath,
 				},
 			},

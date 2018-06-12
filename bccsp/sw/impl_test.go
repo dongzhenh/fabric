@@ -2465,7 +2465,7 @@ func TestKeyImportFromX509SM2PublicKey(t *testing.T) {
 		SerialNumber: big.NewInt(1),
 		Subject: pkix.Name{
 			CommonName:   commonName,
-			Organization: []string{"sansec ltd."},
+			Organization: []string{"alibaba ltd."},
 			Country:      []string{"CN"},
 			ExtraNames: []pkix.AttributeTypeAndValue{
 				{
