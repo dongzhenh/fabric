@@ -18,6 +18,7 @@ import (
 	"github.com/hyperledger/fabric/common/tools/cryptogen/csp"
 	"github.com/hyperledger/fabric/common/tools/cryptogen/metadata"
 	"github.com/hyperledger/fabric/common/tools/cryptogen/msp"
+	"github.com/hyperledger/fabric/common/tools/cryptogenCN"
 	"gopkg.in/alecthomas/kingpin.v2"
 	"gopkg.in/yaml.v2"
 )
@@ -210,6 +211,8 @@ var (
 	ext           = app.Command("extend", "Extend existing network")
 	inputDir      = ext.Flag("input", "The input directory in which existing network place").Default("crypto-config").String()
 	extConfigFile = ext.Flag("config", "The configuration template to use").File()
+
+	sm2Flag = gen.Flag("sm2", "enable sm2 cryptographic").Default("false").Bool()
 )
 
 func main() {
@@ -218,7 +221,12 @@ func main() {
 
 	// "generate" command
 	case gen.FullCommand():
-		generate()
+		//		generate()
+		if *sm2Flag {
+			cryptogenCN.Generate(configFile, outputDir)
+		} else {
+			generate()
+		}
 
 	case ext.FullCommand():
 		extend()

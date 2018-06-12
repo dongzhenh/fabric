@@ -25,6 +25,7 @@ import (
 	mocks2 "github.com/hyperledger/fabric/bccsp/mocks"
 	"github.com/hyperledger/fabric/bccsp/sw/mocks"
 	"github.com/stretchr/testify/assert"
+	"github.com/tjfoc/gmsm/sm2"
 )
 
 func TestKeyGen(t *testing.T) {
@@ -117,4 +118,15 @@ func TestRSAKeyGeneratorInvalidInputs(t *testing.T) {
 	_, err := kg.KeyGen(nil)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "Failed generating RSA -1 key")
+}
+
+//sm2 test
+func TestSM2KeyGenerator(t *testing.T) {
+	kg := &sm2KeyGenerator{curve: sm2.P256Sm2()}
+	k, err := kg.KeyGen(nil)
+	assert.NoError(t, err)
+	sm2K, ok := k.(*sm2PrivateKey)
+	assert.True(t, ok)
+	assert.NotNil(t, sm2K.privKey)
+	assert.Equal(t, sm2K.privKey.Curve, sm2.P256Sm2())
 }

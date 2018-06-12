@@ -25,6 +25,7 @@ import (
 	"github.com/hyperledger/fabric/bccsp"
 	"github.com/hyperledger/fabric/common/flogging"
 	"github.com/pkg/errors"
+	"github.com/tjfoc/gmsm/sm2"
 	"golang.org/x/crypto/sha3"
 )
 
@@ -76,6 +77,7 @@ func New(securityLevel int, hashFamily string, keyStore bccsp.KeyStore) (bccsp.B
 	signers := make(map[reflect.Type]Signer)
 	signers[reflect.TypeOf(&ecdsaPrivateKey{})] = &ecdsaSigner{}
 	signers[reflect.TypeOf(&rsaPrivateKey{})] = &rsaSigner{}
+	signers[reflect.TypeOf(&sm2PrivateKey{})] = &sm2Signer{} //sm2
 
 	// Set the verifiers
 	verifiers := make(map[reflect.Type]Verifier)
@@ -83,6 +85,8 @@ func New(securityLevel int, hashFamily string, keyStore bccsp.KeyStore) (bccsp.B
 	verifiers[reflect.TypeOf(&ecdsaPublicKey{})] = &ecdsaPublicKeyKeyVerifier{}
 	verifiers[reflect.TypeOf(&rsaPrivateKey{})] = &rsaPrivateKeyVerifier{}
 	verifiers[reflect.TypeOf(&rsaPublicKey{})] = &rsaPublicKeyKeyVerifier{}
+	verifiers[reflect.TypeOf(&sm2PrivateKey{})] = &sm2PrivateKeyVerifier{} //sm2 1,2
+	verifiers[reflect.TypeOf(&sm2PublicKey{})] = &sm2PublicKeyKeyVerifier{}
 
 	// Set the hashers
 	hashers := make(map[reflect.Type]Hasher)
@@ -115,6 +119,7 @@ func New(securityLevel int, hashFamily string, keyStore bccsp.KeyStore) (bccsp.B
 	keyGenerators[reflect.TypeOf(&bccsp.RSA2048KeyGenOpts{})] = &rsaKeyGenerator{length: 2048}
 	keyGenerators[reflect.TypeOf(&bccsp.RSA3072KeyGenOpts{})] = &rsaKeyGenerator{length: 3072}
 	keyGenerators[reflect.TypeOf(&bccsp.RSA4096KeyGenOpts{})] = &rsaKeyGenerator{length: 4096}
+	keyGenerators[reflect.TypeOf(&bccsp.SM2KeyGenOpts{})] = &sm2KeyGenerator{curve: sm2.P256Sm2()} //sm2
 	impl.keyGenerators = keyGenerators
 
 	// Set the key generators
@@ -122,6 +127,8 @@ func New(securityLevel int, hashFamily string, keyStore bccsp.KeyStore) (bccsp.B
 	keyDerivers[reflect.TypeOf(&ecdsaPrivateKey{})] = &ecdsaPrivateKeyKeyDeriver{}
 	keyDerivers[reflect.TypeOf(&ecdsaPublicKey{})] = &ecdsaPublicKeyKeyDeriver{}
 	keyDerivers[reflect.TypeOf(&aesPrivateKey{})] = &aesPrivateKeyKeyDeriver{bccsp: impl}
+	keyDerivers[reflect.TypeOf(&sm2PrivateKey{})] = &sm2PrivateKeyKeyDeriver{} //sm2 1,2
+	keyDerivers[reflect.TypeOf(&sm2PublicKey{})] = &sm2PublicKeyKeyDeriver{}
 	impl.keyDerivers = keyDerivers
 
 	// Set the key importers
@@ -133,7 +140,9 @@ func New(securityLevel int, hashFamily string, keyStore bccsp.KeyStore) (bccsp.B
 	keyImporters[reflect.TypeOf(&bccsp.ECDSAGoPublicKeyImportOpts{})] = &ecdsaGoPublicKeyImportOptsKeyImporter{}
 	keyImporters[reflect.TypeOf(&bccsp.RSAGoPublicKeyImportOpts{})] = &rsaGoPublicKeyImportOptsKeyImporter{}
 	keyImporters[reflect.TypeOf(&bccsp.X509PublicKeyImportOpts{})] = &x509PublicKeyImportOptsKeyImporter{bccsp: impl}
-
+	keyImporters[reflect.TypeOf(&bccsp.SM2PKIXPublicKeyImportOpts{})] = &sm2PKIXPublicKeyImportOptsKeyImporter{} //sm2
+	keyImporters[reflect.TypeOf(&bccsp.SM2PrivateKeyImportOpts{})] = &sm2PrivateKeyImportOptsKeyImporter{}
+	keyImporters[reflect.TypeOf(&bccsp.SM2GoPublicKeyImportOpts{})] = &sm2GoPublicKeyImportOptsKeyImporter{}
 	impl.keyImporters = keyImporters
 
 	return impl, nil
