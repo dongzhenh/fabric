@@ -223,7 +223,7 @@ func main() {
 	case gen.FullCommand():
 		//		generate()
 		if *sm2Flag {
-			cryptogenCN.Generate(configFile, outputDir)
+			cryptogenCN.Generate(extConfigFile, outputDir)
 		} else {
 			generate()
 		}
